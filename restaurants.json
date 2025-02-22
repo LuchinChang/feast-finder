@@ -1,0 +1,6 @@
+{
+    "Asian": ["Sushi Ko", "Panda Express", "Thai Basil", "Pho 99"],
+    "Mexican": ["Taco Bell", "Chipotle", "El Pollo Loco", "Casa Verde"],
+    "Italian": ["Olive Garden", "Pizza Hut", "Romano's", "Little Italy"],
+    "American": ["McDonald's", "Five Guys", "In-N-Out", "Subway"]
+  }

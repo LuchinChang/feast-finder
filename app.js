@@ -1,32 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { RotateCw } from 'lucide-react';
 
-// Sample restaurant data (you can replace this with your own JSON)
-const SAMPLE_DATA = {
-  "Asian": ["Sushi Ko", "Panda Express", "Thai Basil", "Pho 99"],
-  "Mexican": ["Taco Bell", "Chipotle", "El Pollo Loco", "Casa Verde"],
-  "Italian": ["Olive Garden", "Pizza Hut", "Romano's", "Little Italy"],
-  "American": ["McDonald's", "Five Guys", "In-N-Out", "Subway"]
-};
 
 const FeastFinder = () => {
-  const [categories] = useState(Object.keys(SAMPLE_DATA));
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedRestaurant, setSelectedRestaurant] = useState('');
-  const [isSpinning, setIsSpinning] = useState(false);
-
-  const selectRestaurant = (category) => {
-    setSelectedCategory(category);
-    setIsSpinning(true);
-    
-    // Simulate spinning animation
-    setTimeout(() => {
-      const restaurants = SAMPLE_DATA[category];
-      const randomRestaurant = restaurants[Math.floor(Math.random() * restaurants.length)];
-      setSelectedRestaurant(randomRestaurant);
-      setIsSpinning(false);
-    }, 2000);
-  };
+    const [restaurantData, setRestaurantData] = useState({});
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedRestaurant, setSelectedRestaurant] = useState('');
+    const [isSpinning, setIsSpinning] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+  
+    // Fetch restaurant data when component mounts
+    useEffect(() => {
+      const fetchRestaurants = async () => {
+        try {
+          const response = await fetch('/restaurants.json');
+          if (!response.ok) {
+            throw new Error('Failed to fetch restaurant data');
+          }
+          const data = await response.json();
+          setRestaurantData(data);
+          setCategories(Object.keys(data));
+          setIsLoading(false);
+        } catch (err) {
+          setError(err.message);
+          setIsLoading(false);
+        }
+      };
+  
+      fetchRestaurants();
+    }, []);
+  
+    const selectRestaurant = (category) => {
+      setSelectedCategory(category);
+      setIsSpinning(true);
+      
+      setTimeout(() => {
+        const restaurants = restaurantData[category];
+        const randomRestaurant = restaurants[Math.floor(Math.random() * restaurants.length)];
+        setSelectedRestaurant(randomRestaurant);
+        setIsSpinning(false);
+      }, 2000);
+    };
+  
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-white text-xl">Loading restaurants...</div>
+        </div>
+      );
+    }
+  
+    if (error) {
+      return (
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-red-500 text-xl">Error: {error}</div>
+        </div>
+      );
+    }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900 to-indigo-900 text-white p-8">
